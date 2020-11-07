@@ -44,8 +44,7 @@ module.exports = {
   triggers: ['poll', '📊'],
   description: 'Ask a polling question. Vote by emoji reaction. Question and options must be wrapped in double quotes. Questions with no provided options are treated as Yes / No / Unsure questions.',
   example: '"Thoughtful question here?" "Optional Answer A" "Optional Answer B"',
-  handler: (message) => {
-    let args = message.content.match(/"(.+?)"/g);
+  handler: (message, args) => {
     if (args) {
       if (!canSendPoll(message.author.id)) {
         return message
