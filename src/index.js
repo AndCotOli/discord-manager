@@ -23,6 +23,16 @@ if (DEBUGGING_COMMAND) {
 client.once('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
 
+  // Add commands
+  const commandFiles = fs
+    .readdirSync(path.join(__dirname, './commands'))
+    .filter((file) => file.endsWith('.js'));
+
+  for (let file of commandFiles) {
+    const command = require(`./commands/${file}`);
+    client.commands.set(command.name, command);
+  }
+
   const guild = client.guilds.cache.get(GUILD_ID);
   if (!DEBUGGING_COMMAND && guild.id === GUILD_ID) {
     germinating.listenCodeOfConductReactions(guild);
@@ -32,16 +42,6 @@ client.once('ready', async () => {
     } catch (error) {
       console.error(error);
     }
-  }
-
-  // Add commands
-  const commandFiles = fs
-    .readdirSync(path.join(__dirname, './commands'))
-    .filter((file) => file.endsWith('.js'));
-
-  for (let file of commandFiles) {
-    const command = require(`./commands/${file}`);
-    client.commands.set(command.name, command);
   }
 });
 
@@ -77,17 +77,17 @@ client.on('message', async (message) => {
     } else if (message.content.startsWith('!')) {
       const args = message.content.slice(1).split(/ +/);
       const commandName = args.shift().toLowerCase();
-
+      
       const command = client.commands.get(commandName) || client.commands.find(
         cmd => cmd.triggers && cmd.triggers.includes(commandName)
       );
-
+        
       if (!command) return;
 
       if (command.args && !args.length)
         return message.reply('You didn\'t provide any arguments');
 
-      if (command.mod && !member.roles.has(MOD_ROLE_ID))
+      if (command.mod && !member.roles.cache.has(MOD_ROLE_ID))
         return message.reply('You must be a gardener to use this command');
 
       try {

@@ -21,7 +21,17 @@ async function remove({ _id }) {
   delete data[_id];
 }
 
+async function get(id) {
+  return data[id];
+}
+
+async function getAllEntries() {
+  return data;
+}
+
 module.exports = {
   update,
-  remove
+  remove,
+  get,
+  getAllEntries
 };
